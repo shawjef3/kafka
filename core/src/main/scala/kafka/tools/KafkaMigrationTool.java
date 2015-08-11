@@ -21,6 +21,7 @@ import joptsimple.*;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
+import kafka.serializer.DefaultEncoder;
 import kafka.utils.Utils;
 
 import java.io.File;
@@ -258,7 +259,8 @@ public class KafkaMigrationTool
       for (int i = 0; i < numProducers; i++) {
         kafkaProducerProperties_08.put("client.id", clientId + "-" + i);
         ProducerConfig producerConfig_08 = new ProducerConfig(kafkaProducerProperties_08);
-        Producer producer = new Producer(producerConfig_08);
+        DefaultEncoder encoder = new DefaultEncoder(null);
+        Producer producer = new Producer(producerConfig_08, encoder, encoder);
         ProducerThread producerThread = new ProducerThread(producerDataChannel, producer, i);
         producerThread.start();
         producerThreads.add(producerThread);

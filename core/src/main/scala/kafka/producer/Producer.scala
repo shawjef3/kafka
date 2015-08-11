@@ -27,8 +27,6 @@ import kafka.utils._
 
 
 class Producer[K,V](val config: ProducerConfig,
-                    encoder: Encoder[V],
-                    keyEncoder: Encoder[K],
                     private val eventHandler: EventHandler[K,V])  // only for unit testing
   extends Logging {
 
@@ -57,7 +55,7 @@ class Producer[K,V](val config: ProducerConfig,
   KafkaMetricsReporter.startReporters(config.props)
   AppInfo.registerInfo()
 
-  def this(config: ProducerConfig) =
+  def this(config: ProducerConfig, encoder: Encoder[V], keyEncoder: Encoder[K]) =
     this(config,
          new DefaultEventHandler[K,V](config,
                                       Utils.createObject[Partitioner](config.partitionerClass, config.props),

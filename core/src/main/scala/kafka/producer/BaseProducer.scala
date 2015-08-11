@@ -17,6 +17,8 @@
 
 package kafka.producer
 
+import kafka.serializer.DefaultEncoder
+
 import java.util.Properties
 
 // A base producer used whenever we need to have options for both old and new producers;
@@ -56,7 +58,10 @@ class OldProducer(producerProps: Properties) extends BaseProducer {
   // default to byte array partitioner
   if (producerProps.getProperty("partitioner.class") == null)
     producerProps.setProperty("partitioner.class", classOf[kafka.producer.ByteArrayPartitioner].getName)
-  val producer = new kafka.producer.Producer[Array[Byte], Array[Byte]](new ProducerConfig(producerProps))
+  val producer = {
+    val encoder = new DefaultEncoder()
+    new kafka.producer.Producer[Array[Byte], Array[Byte]](new ProducerConfig(producerProps), encoder, encoder)
+  }
 
   override def send(topic: String, key: Array[Byte], value: Array[Byte]) {
     this.producer.send(new KeyedMessage[Array[Byte], Array[Byte]](topic, key, value))

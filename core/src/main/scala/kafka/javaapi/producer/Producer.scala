@@ -20,10 +20,11 @@ package kafka.javaapi.producer
 import kafka.producer.ProducerConfig
 import kafka.producer.KeyedMessage
 import scala.collection.mutable
+import kafka.serializer.Encoder
 
 class Producer[K,V](private val underlying: kafka.producer.Producer[K,V]) // for testing only
 {
-  def this(config: ProducerConfig) = this(new kafka.producer.Producer[K,V](config))
+  def this(config: ProducerConfig, encoder: Encoder[V], keyEncoder: Encoder[K]) = this(new kafka.producer.Producer[K,V](config, encoder, keyEncoder))
   /**
    * Sends the data to a single topic, partitioned by key, using either the
    * synchronous or the asynchronous producer
