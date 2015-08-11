@@ -37,11 +37,5 @@ trait AsyncProducerConfig {
 
   /** the number of messages batched at the producer */
   val batchNumMessages = props.getInt("batch.num.messages", 200)
-
-  /** the serializer class for values */
-  val serializerClass = props.getString("serializer.class", "kafka.serializer.DefaultEncoder")
-  
-  /** the serializer class for keys (defaults to the same as for values) */
-  val keySerializerClass = props.getString("key.serializer.class", serializerClass)
   
 }

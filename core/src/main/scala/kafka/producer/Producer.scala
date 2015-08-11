@@ -27,6 +27,8 @@ import kafka.utils._
 
 
 class Producer[K,V](val config: ProducerConfig,
+                    encoder: Encoder[V],
+                    keyEncoder: Encoder[K],
                     private val eventHandler: EventHandler[K,V])  // only for unit testing
   extends Logging {
 
@@ -59,8 +61,8 @@ class Producer[K,V](val config: ProducerConfig,
     this(config,
          new DefaultEventHandler[K,V](config,
                                       Utils.createObject[Partitioner](config.partitionerClass, config.props),
-                                      Utils.createObject[Encoder[V]](config.serializerClass, config.props),
-                                      Utils.createObject[Encoder[K]](config.keySerializerClass, config.props),
+                                      encoder,
+                                      keyEncoder,
                                       new ProducerPool(config)))
 
   /**
