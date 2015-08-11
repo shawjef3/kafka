@@ -369,10 +369,25 @@ object TestUtils extends Logging {
     if (producerProps != null)
       props.putAll(producerProps)
 
+    val verifiableProps = new VerifiableProperties(props)
+
+    val encoderInstance = {
+      val encoderClass = Class.forName(encoder)
+      val constructor = encoderClass.getConstructor(classOf[VerifiableProperties])
+      constructor.newInstance(verifiableProps).asInstanceOf[Encoder[V]]
+    }
+
+    val keyEncoderInstance = {
+      val encoderClass = Class.forName(keyEncoder)
+      val constructor = encoderClass.getConstructor(classOf[VerifiableProperties])
+      constructor.newInstance(verifiableProps).asInstanceOf[Encoder[K]]
+    }
+    
+
     props.put("serializer.class", encoder)
     props.put("key.serializer.class", keyEncoder)
     props.put("partitioner.class", partitioner)
-    new Producer[K, V](new ProducerConfig(props))
+    new Producer[K, V](new ProducerConfig(props), encoderInstance, keyEncoderInstance)
   }
 
   /**
